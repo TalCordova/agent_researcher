@@ -34,7 +34,7 @@ from display import (
 )
 from schemas.paper import Paper
 from schemas.review import AgentTrace, LiteratureReview, NodeOutput, ReviewSection
-from tools import arxiv_search, crossref, semantic_scholar
+from tools import arxiv_search, crossref, ieee, openalex, pubmed, scopus, semantic_scholar
 from tools.embeddings import deduplicate_papers, score_relevance
 
 litellm.suppress_debug_info = True
@@ -160,24 +160,27 @@ def plan_searches(state: ResearchState) -> dict:
 # Node: execute_searches
 # ---------------------------------------------------------------------------
 
+_SOURCES = ["semantic_scholar", "arxiv", "crossref", "openalex", "pubmed", "scopus", "ieee"]
+
+
 async def _gather_searches(queries: list[str], max_per_query: int) -> dict[str, list[Paper]]:
-    results: dict[str, list[Paper]] = {
-        "semantic_scholar": [],
-        "arxiv": [],
-        "crossref": [],
-    }
+    results: dict[str, list[Paper]] = {s: [] for s in _SOURCES}
     tasks = []
     for q in queries:
         tasks.append(semantic_scholar.search(q, max_per_query))
         tasks.append(arxiv_search.search(q, max_per_query))
         tasks.append(crossref.search(q, max_per_query))
+        tasks.append(openalex.search(q, max_per_query))
+        tasks.append(pubmed.search(q, max_per_query))
+        tasks.append(scopus.search(q, max_per_query))
+        tasks.append(ieee.search(q, max_per_query))
 
     all_results = await asyncio.gather(*tasks, return_exceptions=True)
 
-    per_query = 3  # 3 sources per query
+    per_query = len(_SOURCES)
     for i, query in enumerate(queries):
         base = i * per_query
-        for j, source in enumerate(["semantic_scholar", "arxiv", "crossref"]):
+        for j, source in enumerate(_SOURCES):
             r = all_results[base + j]
             if isinstance(r, list):
                 results[source].extend(r)

@@ -18,7 +18,7 @@ class Paper(BaseModel):
     doi: str | None = None
     arxiv_id: str | None = None
     url: str = ""
-    source: Literal["semantic_scholar", "arxiv", "crossref"]
+    source: Literal["semantic_scholar", "arxiv", "crossref", "openalex", "pubmed", "scopus", "ieee"]
     citation_count: int | None = None
     relevance_score: float | None = None  # 0.0–1.0, assigned by embeddings
     key_contributions: list[str] = Field(default_factory=list)  # extracted by LLM
