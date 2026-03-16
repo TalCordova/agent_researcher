@@ -498,14 +498,19 @@ def write_review(state: ResearchState) -> dict:
         },
     ]
 
-    text = _llm_call(config, messages, step="write_review", schema_hint=schema_hint, max_tokens=4096)
+    text = _llm_call(config, messages, step="write_review", schema_hint=schema_hint, max_tokens=8192)
 
     try:
         raw = _parse_json(text)
         if not isinstance(raw, dict):
             raise ValueError("Expected dict")
-    except Exception:
-        raw = {"sections": [], "research_gaps": [], "future_directions": []}
+    except Exception as e:
+        console.print(f"  [yellow]write_review parse error: {e} — falling back to synthesis data[/yellow]")
+        raw = {
+            "sections": [],
+            "research_gaps": synthesis.get("research_gaps", []),
+            "future_directions": synthesis.get("future_directions", []),
+        }
 
     review = LiteratureReview(
         topic=topic,
