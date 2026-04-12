@@ -1,5 +1,7 @@
 # agent_researcher — Masters Student Agent
 
+This is a Python-first project environment. Default to Python for all scripting, automation, and implementation tasks. Use virtual environments (venv) for dependency management.
+
 ## What this project does
 
 An AI agent that performs academic literature reviews. Given a research topic it:
@@ -139,3 +141,11 @@ When ready to add retrieval-augmented synthesis:
 ## Dependencies
 
 See [requirements.txt](requirements.txt). Python 3.12+ required.
+
+## Testing
+
+After making code changes, always run the existing test suite (e.g., `pytest`) before reporting completion. If tests fail, fix them before presenting the result.
+
+## Communication Style
+
+When explaining technical processes (git workflows, architecture, library choices), start with a beginner-friendly overview before diving into details. Don't assume prior knowledge unless the user demonstrates it.
